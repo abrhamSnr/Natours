@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const { protect, restrictTo } = require('../controller/authController');
 const {
   aliasTopRoute,
   getAllTours,
@@ -16,7 +17,12 @@ const {
 router.route('/top-5-cheap').get(aliasTopRoute, getAllTours);
 router.route('/tour-stats').get(getTourStats);
 router.route('/monthly-plan/:year').get(getMonthlyPlan);
-router.route('/').get(getAllTours).post(createTour);
-router.route('/:id').get(getTour).patch(updateTour).delete(deleteTour);
+router.route('/').get(protect, getAllTours).post(createTour);
+//We needed to protect deleteroute to be acccess only for admins
+router
+  .route('/:id')
+  .get(getTour)
+  .patch(updateTour)
+  .delete(protect, restrictTo('admin', 'lead-guid'), deleteTour);
 
 module.exports = router;

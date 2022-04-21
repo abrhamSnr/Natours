@@ -46,6 +46,7 @@ const getTour = catchAsync(async (req, res, next) => {
   const tour = await Tour.findById(req.params.id);
 
   if (!tour) {
+    //This will send the error to 
     return next(new AppError('We can not find the id', 404));
   }
 
