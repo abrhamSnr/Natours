@@ -97,8 +97,7 @@ const protect = catchAsync(async (req, res, next) => {
   next();
 });
 
-//Restrict perform some tasks to certain user
-//We use destructring on parameter because we pass an on that method
+//Restrict perform some tasks to certain user. We use destructring on parameter because we pass an on that method
 const restrictTo = (...roles) => {
   return (req, res, next) => {
     //roles ['admin', 'lead-guid'], role='user'
@@ -200,6 +199,38 @@ const resetPassword = catchAsync(async (req, res, next) => {
   });
 });
 
+const updatePassword = catchAsync(async (req, res, next) => {
+  // Get User From collection
+  const user = await User.findById(req.user._id).select('+password');
+
+  if (
+    !req.body.currentPassword ||
+    !req.body.password ||
+    !req.body.passwordConfirm
+  ) {
+    return next(new AppError('Enter a password'), 401);
+  }
+
+  //Check if posted current password is correct
+  if (
+    !user ||
+    !(await user.correctPassword(req.body.currentPassword, user.password))
+  ) {
+    return next(new AppError('Your current password is incorrect', 401));
+  }
+
+  // If so update password
+  user.password = req.body.password;
+  user.passwordConfirm = req.body.passwordConfirm;
+  await user.save();
+
+  // Log user in send JWT
+  const token = signToken(user._id);
+  res.status(200).json({
+    status: 'sucess',
+    token,
+  });
+});
 
 module.exports = {
   signUp,
@@ -208,4 +239,5 @@ module.exports = {
   restrictTo,
   forgotPassword,
   resetPassword,
+  updatePassword,
 };

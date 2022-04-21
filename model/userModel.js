@@ -46,8 +46,7 @@ const userSchema = new mongoose.Schema({
   passwordResetExpires: Date,
 });
 
-//Middleware before save the user schema
-//Hashing the password
+//Middleware before save the user schema. Hashing the password
 userSchema.pre('save', async function (next) {
   //Only run this middleware when the password is modified
   if (!this.isModified('password')) return next();
@@ -69,14 +68,12 @@ userSchema.pre('save', async function (next) {
   next();
 });
 
-//Instance method
-//Compare the hased password and the plain text password
+//Instance method. Compare the hased password and the plain text password
 userSchema.methods.correctPassword = async function (
   candidatePassword,
   userPassword
 ) {
-  //key word 'this' will not work since the select property is false for password
-  //It will return boolean
+  //key word 'this' will not work since the select property is false for password. It will return boolean
   return await bcrypt.compare(candidatePassword, userPassword);
 };
 
