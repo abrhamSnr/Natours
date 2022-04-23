@@ -4,11 +4,20 @@ const AppError = require('./utils/appError');
 const globalErrorHandler = require('./controller/errorController');
 const tourRouter = require('./routes/tourRoutes');
 const usersRouter = require('./routes/userRoutes');
+const rateLimit = require('express-rate-limit');
 
 const app = express();
 if (process.env.NODE_ENV === 'development') {
   app.use(morgan('dev'));
 }
+
+//To Limit request amount from certain IP
+const limiter = rateLimit({
+  max: 100,
+  windowMs: 60 * 60 * 1000,
+  message: 'Too many requests from this IP, please try again in an hour!',
+});
+app.use('/api',limiter);
 
 //MiddelWare to read the json
 app.use(express.json()); 

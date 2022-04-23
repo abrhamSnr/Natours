@@ -13,6 +13,20 @@ const signToken = (id) => {
   });
 };
 
+//Create a cookie to send the jwt token
+const createCookie = (token, res) => {
+  const cookieOptions = {
+    expires: new Date(
+      Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000
+    ),
+    httpOnly: true,
+  };
+
+  if (process.env.NODE_ENV === 'production') cookieOptions.secure = true;
+
+  res.cookie('jwt', token, cookieOptions);
+};
+
 const signUp = catchAsync(async (req, res, next) => {
   const newUser = await User.create({
     name: req.body.name,
@@ -23,6 +37,9 @@ const signUp = catchAsync(async (req, res, next) => {
     role: req.body.role,
   });
   const token = signToken(newUser._id);
+
+  createCookie(token, res);
+
   res.status(200).json({
     status: 'success',
     token,
@@ -50,6 +67,9 @@ const logIn = catchAsync(async (req, res, next) => {
 
   //If everything ok, send token to client
   const token = signToken(user._id);
+
+  createCookie(token, res);
+
   res.status(200).json({
     status: 'sucess',
     token,
@@ -193,6 +213,9 @@ const resetPassword = catchAsync(async (req, res, next) => {
 
   //4, Login the user in, send the jwt token
   const token = signToken(user._id);
+
+  createCookie(token, res);
+
   res.status(200).json({
     status: 'sucess',
     token,
@@ -226,6 +249,9 @@ const updatePassword = catchAsync(async (req, res, next) => {
 
   // Log user in send JWT
   const token = signToken(user._id);
+
+  createCookie(token, res);
+
   res.status(200).json({
     status: 'sucess',
     token,
