@@ -44,6 +44,11 @@ const userSchema = new mongoose.Schema({
   passwordChangeAt: Date,
   passwordResetToken: String,
   passwordResetExpires: Date,
+  active: {
+    type: Boolean,
+    default: true,
+    select: false,
+  },
 });
 
 //Middleware before save the user schema. Hashing the password
@@ -65,6 +70,13 @@ userSchema.pre('save', async function (next) {
 
   //If the token got created before the password
   this.passwordChangeAt = Date.now() - 1000;
+  next();
+});
+
+//Query middleware
+userSchema.pre(/^find/, function(next) {
+  //This point to the current query
+  this.find({ active: {$ne: false }});
   next();
 });
 

@@ -33,12 +33,25 @@ const updateMe = catchAsync(async (req, res, next) => {
   });
 });
 
-const getAllUsers = (req, res) => {
-  res.status(500).json({
-    status: 'error',
-    message: 'This route is not yet defined',
+const deleteMe = catchAsync(async (req, res, next) => {
+  await User.findByIdAndUpdate(req.user.id, { active: false });
+
+  res.status(204).json({
+    statuts: 'sucess',
+    data: null,
   });
-};
+});
+
+const getAllUsers = catchAsync(async (req, res) => {
+  const data = await User.find();
+
+  res.status(200).json({
+    status: 'sucess',
+    users: {
+      data
+    }
+  });
+});
 
 const createUsers = (req, res) => {
   res.status(500).json({
@@ -75,4 +88,5 @@ module.exports = {
   getUser,
   updateUser,
   deleteUser,
+  deleteMe,
 };
