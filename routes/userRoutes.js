@@ -23,6 +23,7 @@ router.post('/login', logIn);
 
 router.post('/forgotpassword', forgotPassword);
 router.patch('/resetpassword/:token', resetPassword);
+
 router.patch('/updatepassword', protect, updatePassword);
 router.patch('/updateme', protect, updateMe);
 router.delete('/deleteme', protect, deleteMe);

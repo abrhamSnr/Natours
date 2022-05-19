@@ -73,9 +73,9 @@ userSchema.pre('save', async function (next) {
   next();
 });
 
-//Query middleware
+//Query middleware, This middelware won't get the user where active is false 
 userSchema.pre(/^find/, function(next) {
-  //This point to the current query
+  //This point to the current query, { User.find({active: {$ne: false}}) }
   this.find({ active: {$ne: false }});
   next();
 });
