@@ -89,6 +89,7 @@ const deleteTour = catchAsync(async (req, res, next) => {
     return next(new AppError('We can not find the id', 404));
   }
 
+  //When you delete it's 204 status code and send back data null (We don't need to see the deleted content)
   res.status(204).json({ status: 'sucess', data: null });
 });
 
